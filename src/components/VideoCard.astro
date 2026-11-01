@@ -22,7 +22,10 @@ const category = categoryNames[video.data.category];
 const episode = String(video.data.day).padStart(2, "0");
 ---
 
-<a class="video-card" href={`/videos/${video.id}/`}>
+<a
+  class="video-card"
+  href={`${import.meta.env.BASE_URL.replace(/\/?$/, "/")}videos/${video.id}/`}
+>
   <div class="video-card-top">
     <span>EPISODE {episode} / 07</span>
     <span class="heart">♡</span>

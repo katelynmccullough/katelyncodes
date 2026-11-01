@@ -1,4 +1,6 @@
-
+---
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+---
 <section class="intro-section">
   <div class="intro-copy">
     <p class="eyebrow">THE GIRL BEHIND THE CODE 🎀</p>
@@ -32,15 +34,18 @@
       ambitious minds, pretty things & really good code. ♡
     </p>
 
-    <a class="about-button" href="/about/">
-      more about me ↗
+    <a class="about-button" href={`${base}about/`}>
+        more about me ↗
     </a>
   </div>
 
   <div class="video-column">
     <div class="video-frame">
       <video controls playsinline preload="metadata">
-        <source src="/videos/intro.mp4" type="video/mp4" />
+        <source
+            src={`${import.meta.env.BASE_URL}videos/intro.mp4`}
+            type="video/mp4"
+        />
         Your browser does not support video playback.
       </video>
     </div>

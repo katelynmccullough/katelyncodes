@@ -26,11 +26,11 @@ const { title } = Astro.props;
       <a class="logo" href="/">katelyn codes ♡</a>
 
       <nav aria-label="Main navigation">
-        <a href="/">home</a>
-        <a href="/series/">series</a>
-        <a href="/resources/">resources</a>
-        <a href="/letters/">letters</a>
-        <a href="/about/">about</a>
+        <a href={import.meta.env.BASE_URL}>home</a>
+        <a href={`${import.meta.env.BASE_URL}series/`}>series</a>
+        <a href={`${import.meta.env.BASE_URL}resources/`}>resources</a>
+        <a href={`${import.meta.env.BASE_URL}letters/`}>letters</a>
+        <a href={`${import.meta.env.BASE_URL}about/`}>about</a>
       </nav>
     </header>
 
