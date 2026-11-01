@@ -1,0 +1,146 @@
+
+<section class="intro-section">
+  <div class="intro-copy">
+    <p class="eyebrow">THE GIRL BEHIND THE CODE 🎀</p>
+
+    <h1>hi, i'm katelyn<span>♡</span></h1>
+
+    <p class="roles">
+      DATA SCIENCE · DEVELOPMENT · RESEARCH
+    </p>
+
+    <p>
+      I'm a Data Science student at Florida Polytechnic
+      University, studying Applied Mathematics and Economics,
+      with a passion for building things that actually matter.
+    </p>
+
+    <p>
+      I've built real-world business applications, worked
+      with data and automation, and explored machine learning
+      and AI ethics through my research. I love finding
+      creative ways to solve technical problems.  
+    </p>
+
+    <p>
+      I created Katelyn Codes to share the projects,
+      discoveries, and lessons behind the work — and to
+      make tech feel a little more accessible along the way.
+    </p>
+
+    <p class="signature">
+      ambitious minds, pretty things & really good code. ♡
+    </p>
+
+    <a class="about-button" href="/about/">
+      more about me ↗
+    </a>
+  </div>
+
+  <div class="video-column">
+    <div class="video-frame">
+      <video controls playsinline preload="metadata">
+        <source src="/videos/intro.mp4" type="video/mp4" />
+        Your browser does not support video playback.
+      </video>
+    </div>
+    <p class="video-caption">
+      a little introduction to my world ♡
+    </p>
+  </div>
+</section>
+
+<style>
+  .intro-section {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    align-items: center;
+    gap: 70px;
+  }
+
+  h1 {
+    font-size: clamp(48px, 6vw, 76px);
+    margin: 18px 0;
+  }
+
+  h1 span {
+    color: var(--red);
+    margin-left: 10px;
+  }
+
+  .roles {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--red);
+    margin-bottom: 30px;
+  }
+
+  .intro-copy > p:not(.eyebrow):not(.roles):not(.signature) {
+    color: var(--muted);
+    line-height: 1.9;
+    font-size: 15px;
+  }
+
+  .signature {
+    font-family: "Playfair Display", serif;
+    font-style: italic;
+    color: var(--red);
+    font-size: 20px;
+    margin: 30px 0;
+  }
+
+  .about-button {
+    display: inline-block;
+    background: var(--red);
+    color: white;
+    padding: 15px 28px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .about-button:hover {
+    color: white;
+    background: #741126;
+  }
+
+  .video-column {
+    width: 100%;
+    max-width: 340px;
+    margin: auto;
+  }
+
+  .video-frame {
+    border: 3px solid var(--red);
+    border-radius: 25px;
+    overflow: hidden;
+    background: #21191d;
+    box-shadow: 12px 12px 0 var(--pink);
+  }
+
+  video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    object-fit: cover;
+  }
+
+  .video-caption {
+    text-align: center;
+    color: var(--red);
+    font-size: 12px;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 800px) {
+    .intro-section {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .video-column {
+      max-width: 300px;
+    }
+  }
+</style>

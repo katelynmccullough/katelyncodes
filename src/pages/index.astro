@@ -1,0 +1,46 @@
+
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import IntroSection from "../components/IntroSection.astro";
+---
+
+<BaseLayout title="Home">
+  <IntroSection />
+
+  <section class="section">
+    <p class="eyebrow">01 / CURRENTLY WATCHING</p>
+    <h2>this week's series ♡</h2>
+
+    <div class="placeholder">
+      7 little episodes coming soon 🎀
+    </div>
+
+    <p>
+      <a href="/series/">explore all series →</a>
+    </p>
+  </section>
+
+  <section class="section">
+    <p class="eyebrow">02 / THE GOOD STUFF</p>
+    <h2>the resource library</h2>
+
+    <p class="intro">
+      my favorite tutorials, tools, research papers,
+      and interesting internet finds.
+    </p>
+
+    <a href="/resources/">browse resources →</a>
+  </section>
+
+  <section class="section">
+    <p class="eyebrow">03 / LOVE LETTERS</p>
+    <h2>the weekly download ♡</h2>
+
+    <p class="intro">
+      a little tech, a little chaos,
+      a lot of curiosity.
+    </p>
+
+    <a href="/letters/">read the letters →</a>
+  </section>
+</BaseLayout>

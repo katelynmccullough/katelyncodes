@@ -1,0 +1,140 @@
+
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  video: CollectionEntry<"videos">;
+}
+
+const { video } = Astro.props;
+
+const categoryNames: Record<string, string> = {
+  research: "Research Paper of the Week",
+  project: "Fun Coding Project",
+  "tech-girlie": "Becoming a Tech Girlie",
+  "data-science": "Data Science Deep Dive",
+  ai: "AI Experiments",
+  ethics: "Tech Ethics",
+  news: "AI & Tech News",
+};
+
+const category = categoryNames[video.data.category];
+const episode = String(video.data.day).padStart(2, "0");
+---
+
+<a class="video-card" href={`/videos/${video.id}/`}>
+  <div class="video-card-top">
+    <span>EPISODE {episode} / 07</span>
+    <span class="heart">♡</span>
+  </div>
+
+  <div class="video-card-art">
+    <span class="art-icon">✳</span>
+    <span>the tech girlie edit ♡</span>
+  </div>
+
+  <div class="video-card-content">
+    <span class="video-category">{category}</span>
+
+    <h3>{video.data.title}</h3>
+
+    <p>{video.data.description}</p>
+
+    <span class="video-card-link">
+      explore episode ↗
+    </span>
+  </div>
+</a>
+
+<style>
+  .video-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #f0d7dc;
+    border-radius: 20px;
+    color: #21191d;
+    text-decoration: none;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(169, 25, 57, 0.12);
+  }
+
+  .video-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #a91939;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .heart {
+    font-size: 24px;
+    line-height: 1;
+  }
+
+  .video-card-art {
+    min-height: 150px;
+    background: #f6e5e8;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    color: #a91939;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .art-icon {
+    font-size: 40px;
+  }
+
+  .video-card-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 12px;
+  }
+
+  .video-category {
+    color: #a91939;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  h3 {
+    margin: 0;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 25px;
+    line-height: 1.25;
+  }
+
+  p {
+    margin: 0;
+    color: #68565c;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .video-card-link {
+    margin-top: auto;
+    padding-top: 10px;
+    color: #a91939;
+    font-size: 13px;
+    font-weight: 700;
+  }
+</style>
+

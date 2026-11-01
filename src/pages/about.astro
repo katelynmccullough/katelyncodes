@@ -1,0 +1,429 @@
+
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const skills = [
+  "Python", "R", "SQL", "C++", "Data Science",
+  "Machine Learning", "Statistical Analysis",
+  "Power BI", "Power Apps", "Power Automate",
+  "AWS", "Git & GitHub"
+];
+
+const interests = [
+  {
+    number: "01",
+    title: "data science & machine learning",
+    description: "I love turning messy data into something meaningful, whether that's finding patterns, building models, or answering questions nobody thought to ask."
+  },
+  {
+    number: "02",
+    title: "building things that matter",
+    description: "There's something really satisfying about taking an idea and turning it into an actual tool that people can use."
+  },
+  {
+    number: "03",
+    title: "AI, ethics & research",
+    description: "I'm fascinated by the relationship between technology and people, especially how artificial intelligence shapes the way we think, connect, and make decisions."
+  },
+  {
+    number: "04",
+    title: "making tech more accessible",
+    description: "I believe you can be ambitious, technical, creative, and feminine all at once. You shouldn't have to change who you are to belong in tech."
+  }
+];
+---
+
+<BaseLayout title="About">
+  <div class="about-page">
+
+    <section class="about-hero">
+      <p class="eyebrow">THE GIRL BEHIND THE CODE ♡</p>
+
+      <h1>more than just<br /><em>pretty code.</em></h1>
+
+      <p class="hero-subtitle">
+        data science student. developer. researcher.
+        girl with a lot of ideas.
+      </p>
+    </section>
+
+    <section class="story-section">
+      <div class="section-label">
+        <span>01 / THE INTRODUCTION</span>
+      </div>
+
+      <div class="story-content">
+        <h2>hi, i'm katelyn. ♡</h2>
+
+        <p>
+          I'm a Data Science student at Florida Polytechnic
+          University, pursuing an Applied Mathematics minor
+          and studying Economics. I'm interested in the
+          intersection of data, technology, research, and
+          the people affected by all three.
+        </p>
+
+        <p>
+          My interests span machine learning, statistical
+          modeling, software development, and artificial
+          intelligence. I especially love projects that
+          challenge me to learn something new and turn
+          complicated ideas into something useful.
+        </p>
+
+        <p>
+          I've worked in technology at Publix, developing
+          business applications and automating workflows
+          to solve real operational problems. That experience
+          showed me how much I enjoy building solutions
+          that go beyond a classroom assignment.
+        </p>
+
+        <p>
+          Outside of work and school, I'm constantly
+          exploring new ideas, reading research, working
+          on personal projects, and finding new things
+          I want to learn.
+        </p>
+      </div>
+    </section>
+
+    <section class="experience-section">
+      <div class="section-label">
+        <span>02 / WHAT I'VE BEEN UP TO</span>
+      </div>
+
+      <h2>the experience ♡</h2>
+
+      <div class="experience-card">
+        <div class="experience-top">
+          <div>
+            <p class="card-eyebrow">PROFESSIONAL EXPERIENCE</p>
+            <h3>Publix Super Markets</h3>
+            <p class="role">
+              Facilities Technical Specialist
+            </p>
+          </div>
+          <span class="experience-tag">TECH + BUSINESS</span>
+        </div>
+
+        <p>
+          Developing internal tools and workflow solutions
+          using Microsoft's Power Platform, SharePoint,
+          Dataverse, and data analysis to improve
+          operational processes.
+        </p>
+      </div>
+
+      <div class="experience-card">
+        <div class="experience-top">
+          <div>
+            <p class="card-eyebrow">EDUCATION</p>
+            <h3>Florida Polytechnic University</h3>
+            <p class="role">
+              B.S. Data Science
+            </p>
+          </div>
+          <span class="experience-tag">CLASS OF 2028</span>
+        </div>
+
+        <p>
+          Studying data science with interests in applied
+          mathematics, economics, machine learning,
+          and computational research.
+        </p>
+      </div>
+    </section>
+
+    <section class="interests-section">
+      <div class="section-label">
+        <span>03 / THE THINGS I LOVE</span>
+      </div>
+
+      <h2>what makes my brain tick.</h2>
+
+      <div class="interest-grid">
+        {interests.map((interest) => (
+          <article class="interest-card">
+            <span class="interest-number">
+              {interest.number} ♡
+            </span>
+            <h3>{interest.title}</h3>
+            <p>{interest.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="skills-section">
+      <div class="section-label">
+        <span>04 / MY TOOLBOX</span>
+      </div>
+
+      <h2>things i work with 🎀</h2>
+
+      <div class="skills-list">
+        {skills.map((skill) => (
+          <span class="skill">{skill}</span>
+        ))}
+      </div>
+    </section>
+
+    <section class="mission-section">
+      <p class="eyebrow">05 / WHY KATELYN CODES EXISTS</p>
+
+      <h2>you can be both. ♡</h2>
+
+      <p>
+        You can love pink, wear bows, care about aesthetics,
+        and still be serious about technology.
+      </p>
+
+      <p>
+        Katelyn Codes is where I share what I'm building,
+        what I'm researching, and what I'm learning.
+        It's a place for curiosity, creativity, and
+        making complicated things feel a little less
+        intimidating.
+      </p>
+
+      <p class="mission-signature">
+        ambitious minds, pretty things & really good code. ♡
+      </p>
+
+      <a
+        class="connect-button"
+        href="https://www.linkedin.com/in/katelynmccullough09"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        let's connect ↗
+      </a>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<style>
+  .about-page {
+    max-width: 1050px;
+    margin: auto;
+  }
+
+  .about-hero {
+    padding: 30px 0 90px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .about-hero h1 {
+    font-size: clamp(55px, 9vw, 110px);
+    line-height: 1.05;
+    letter-spacing: -3px;
+    margin: 25px 0;
+  }
+
+  .about-hero em {
+    color: var(--red);
+    font-weight: 500;
+  }
+
+  .hero-subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+
+  .section-label {
+    color: var(--red);
+    font-size: 11px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    margin-bottom: 30px;
+  }
+
+  .story-section,
+  .experience-section,
+  .interests-section,
+  .skills-section {
+    padding: 85px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .story-content {
+    max-width: 760px;
+  }
+
+  h2 {
+    font-size: clamp(35px, 5vw, 55px);
+    margin: 0 0 35px;
+  }
+
+  .story-content p {
+    color: var(--muted);
+    line-height: 2;
+    font-size: 16px;
+    margin-bottom: 22px;
+  }
+
+  .experience-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 32px;
+    margin-bottom: 20px;
+  }
+
+  .experience-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .card-eyebrow {
+    color: var(--red);
+    font-size: 10px;
+    letter-spacing: 2px;
+    font-weight: 700;
+  }
+
+  .experience-card h3 {
+    font-family: "Playfair Display", serif;
+    font-size: 27px;
+    margin: 12px 0;
+  }
+
+  .role {
+    color: var(--red);
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  .experience-card > p {
+    color: var(--muted);
+    line-height: 1.8;
+    max-width: 700px;
+  }
+
+  .experience-tag {
+    background: var(--pink);
+    color: var(--red);
+    padding: 10px 15px;
+    border-radius: 30px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .interest-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .interest-card {
+    background: white;
+    padding: 30px;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    transition: transform .2s ease;
+  }
+
+  .interest-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .interest-number {
+    color: var(--red);
+    font-size: 12px;
+  }
+
+  .interest-card h3 {
+    font-family: "Playfair Display", serif;
+    font-size: 25px;
+    margin: 20px 0 12px;
+  }
+
+  .interest-card p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  .skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .skill {
+    background: white;
+    border: 1px solid #dcb4bf;
+    color: var(--red);
+    border-radius: 50px;
+    padding: 12px 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .mission-section {
+    text-align: center;
+    padding: 110px 20px 60px;
+  }
+
+  .mission-section h2 {
+    font-size: clamp(50px, 8vw, 85px);
+    color: var(--red);
+  }
+
+  .mission-section > p:not(.eyebrow):not(.mission-signature) {
+    color: var(--muted);
+    max-width: 650px;
+    margin: 20px auto;
+    line-height: 1.9;
+  }
+
+  .mission-signature {
+    font-family: "Playfair Display", serif;
+    font-style: italic;
+    color: var(--red);
+    font-size: 22px;
+    margin: 40px 0;
+  }
+
+  .connect-button {
+    display: inline-block;
+    background: var(--red);
+    color: white;
+    padding: 16px 35px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .connect-button:hover {
+    background: #741126;
+    color: white;
+  }
+
+  @media(max-width: 700px) {
+    .about-hero {
+      padding-bottom: 60px;
+    }
+
+    .interest-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .experience-top {
+      flex-direction: column;
+    }
+
+    .story-section,
+    .experience-section,
+    .interests-section,
+    .skills-section {
+      padding: 60px 0;
+    }
+  }
+</style>

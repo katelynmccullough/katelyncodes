@@ -1,0 +1,126 @@
+
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SeriesGrid from "../../components/SeriesGrid.astro";
+import { getCollection } from "astro:content";
+
+const series = (await getCollection("series")).sort(
+  (a, b) => b.data.week - a.data.week
+);
+
+const videos = await getCollection("videos");
+---
+
+<BaseLayout title="The Series | Katelyn Codes">
+  <main class="page-container series-page">
+    <div class="series-hero">
+      <p class="eyebrow">THE KATELYN CODES EDIT ♡</p>
+      <h1>seven days. seven sides of tech.</h1>
+      <p class="series-intro">
+        A new collection every week. Research, coding projects,
+        AI experiments, tech ethics, and everything in between.
+      </p>
+    </div>
+
+    {series.map((week) => (
+      <section class="weekly-section">
+        <div class="week-heading">
+          <div>
+            <span class="week-label">
+              WEEK {String(week.data.week).padStart(2, "0")}
+            </span>
+            <h2>{week.data.title}</h2>
+            <p>{week.data.description}</p>
+          </div>
+
+          {week.data.theme && (
+            <span class="theme-pill">✧ {week.data.theme}</span>
+          )}
+        </div>
+
+        <SeriesGrid
+          videos={videos.filter(
+            (video) => video.data.series === week.id
+          )}
+        />
+      </section>
+    ))}
+  </main>
+</BaseLayout>
+
+<style>
+  .series-page {
+    padding-top: 75px;
+    padding-bottom: 100px;
+  }
+
+  .series-hero {
+    max-width: 760px;
+    margin-bottom: 70px;
+  }
+
+  .series-hero h1 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(42px, 6vw, 74px);
+    line-height: 1.1;
+    margin: 16px 0 22px;
+  }
+
+  .series-intro {
+    color: #68565c;
+    font-size: 18px;
+    line-height: 1.8;
+  }
+
+  .weekly-section {
+    margin-bottom: 90px;
+  }
+
+  .week-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #e4b9c2;
+  }
+
+  .week-label {
+    color: #a91939;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+
+  .week-heading h2 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(28px, 4vw, 42px);
+    margin: 12px 0;
+  }
+
+  .week-heading p {
+    color: #68565c;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .theme-pill {
+    flex-shrink: 0;
+    background: #f6e5e8;
+    color: #a91939;
+    padding: 12px 18px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  @media (max-width: 600px) {
+    .week-heading {
+      flex-direction: column;
+    }
+
+    .series-page {
+      padding-top: 45px;
+    }
+  }
+</style>

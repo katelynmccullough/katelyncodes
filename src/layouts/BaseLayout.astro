@@ -1,0 +1,45 @@
+
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} | Katelyn Codes ♡</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <header class="site-header">
+      <a class="logo" href="/">katelyn codes ♡</a>
+
+      <nav aria-label="Main navigation">
+        <a href="/">home</a>
+        <a href="/series/">series</a>
+        <a href="/resources/">resources</a>
+        <a href="/letters/">letters</a>
+        <a href="/about/">about</a>
+      </nav>
+    </header>
+
+    <main class="page-container">
+      <slot />
+    </main>
+
+    <footer>
+      made with love & a little bit of code ♡
+    </footer>
+  </body>
+</html>
