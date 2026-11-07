@@ -1,0 +1,273 @@
+
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import {
+  getCollection,
+  render,
+  type CollectionEntry,
+} from "astro:content";
+
+export async function getStaticPaths() {
+  const videos = await getCollection(
+    "videos",
+    ({ data }) => !data.draft
+  );
+
+  const series = await getCollection("series");
+  const validSeries = new Set(series.map((item) => item.id));
+
+  return videos
+    .filter((video) => validSeries.has(video.data.series))
+    .map((video) => ({
+      params: {
+        series: video.data.series,
+        episode: video.id,
+      },
+      props: { video },
+    }));
+}
+
+interface Props {
+  video: CollectionEntry<"videos">;
+}
+
+const { video } = Astro.props;
+const { Content } = await render(video);
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+const seriesUrl = `${base}series/${video.data.series}/`;
+
+const allSeries = await getCollection("series");
+const parentSeries = allSeries.find(
+  (item) => item.id === video.data.series
+);
+
+const date = video.data.publishDate.toLocaleDateString(
+  "en-US",
+  {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }
+);
+---
+
+<BaseLayout title={`${video.data.title} | Katelyn Codes`}>
+  <article class="episode-page">
+    <a class="back-link" href={seriesUrl}>
+      ← back to {parentSeries?.data.title ?? "the series"}
+    </a>
+
+    <header class="episode-hero">
+      <p class="eyebrow">
+        EPISODE {String(video.data.episode).padStart(2, "0")}
+        / {parentSeries?.data.title ?? "KATELYN CODES"}
+      </p>
+
+      <h1>{video.data.title}</h1>
+      <p class="intro">{video.data.description}</p>
+      <p class="date">{date}</p>
+    </header>
+
+    {video.data.tiktokUrl && (
+      <section class="episode-section">
+        <h2>watch the episode ♡</h2>
+        <a
+          class="action-link"
+          href={video.data.tiktokUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          watch on TikTok ↗
+        </a>
+      </section>
+    )}
+
+    <section class="episode-section">
+      <h2>the breakdown ♡</h2>
+
+      <div class="episode-body">
+        <Content />
+      </div>
+    </section>
+
+    {video.data.githubUrl && (
+      <section class="episode-section">
+        <h2>the code ♡</h2>
+        <p>
+          Want to explore the project or follow along?
+          You can find the code on GitHub.
+        </p>
+
+        <a
+          class="action-link"
+          href={video.data.githubUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          view on GitHub ↗
+        </a>
+      </section>
+    )}
+
+    {video.data.links.length > 0 && (
+      <section class="episode-section">
+        <h2>the resource shelf ♡</h2>
+
+        <ul class="resource-list">
+          {video.data.links.map((link) => (
+            <li>
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {link.label} ↗
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <a class="all-series" href={`${base}series/`}>
+      explore more series ♡
+    </a>
+  </article>
+</BaseLayout>
+
+<style>
+  .episode-page {
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 65px 0 110px;
+  }
+
+  .back-link,
+  .all-series {
+    color: #a91939;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .back-link:hover,
+  .all-series:hover {
+    text-decoration: underline;
+  }
+
+  .episode-hero {
+    margin: 55px 0 65px;
+  }
+
+  .episode-hero h1 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(44px, 6vw, 76px);
+    line-height: 1.12;
+    margin: 18px 0 24px;
+  }
+
+  .intro {
+    font-size: 19px;
+    line-height: 1.8;
+    color: #68565c;
+  }
+
+  .date {
+    margin-top: 22px;
+    font-size: 13px;
+    color: #a91939;
+    font-weight: 700;
+  }
+
+  .episode-section {
+    margin: 45px 0;
+    padding: 30px;
+    background: #fff9f8;
+    border: 1px solid #f0d7dc;
+    border-radius: 22px;
+  }
+
+  .episode-section h2 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 30px;
+    margin: 0 0 22px;
+  }
+
+  .episode-section p {
+    color: #68565c;
+    line-height: 1.8;
+  }
+
+  .episode-body {
+    color: #342b30;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+  }
+
+  .episode-body :global(h2),
+  .episode-body :global(h3) {
+    font-family: "Playfair Display", Georgia, serif;
+    margin: 28px 0 12px;
+  }
+
+  .episode-body :global(a) {
+    color: #a91939;
+  }
+
+  .episode-body :global(pre) {
+    overflow-x: auto;
+    padding: 18px;
+    border-radius: 12px;
+    background: #f6e5e8;
+  }
+
+  .episode-body :global(img) {
+    max-width: 100%;
+    border-radius: 12px;
+  }
+
+  .action-link {
+    display: inline-block;
+    padding: 13px 20px;
+    background: #a91939;
+    color: white;
+    border-radius: 100px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .resource-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .resource-list li {
+    border-bottom: 1px solid #f0d7dc;
+    padding: 14px 0;
+  }
+
+  .resource-list a {
+    color: #a91939;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .all-series {
+    display: inline-block;
+    margin-top: 30px;
+  }
+
+  @media (max-width: 600px) {
+    .episode-page {
+      padding-top: 40px;
+    }
+
+    .episode-section {
+      padding: 22px;
+    }
+  }
+</style>

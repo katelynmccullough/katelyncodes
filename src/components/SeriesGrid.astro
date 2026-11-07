@@ -8,45 +8,36 @@ interface Props {
 }
 
 const { videos } = Astro.props;
-
-const categories = [
-  { day: 1, label: "Research Paper of the Week", icon: "✧" },
-  { day: 2, label: "Fun Coding Project", icon: "⌘" },
-  { day: 3, label: "Becoming a Tech Girlie", icon: "♡" },
-  { day: 4, label: "Data Science Deep Dive", icon: "✳" },
-  { day: 5, label: "AI Experiments", icon: "✦" },
-  { day: 6, label: "Tech Ethics", icon: "⚖" },
-  { day: 7, label: "AI & Tech News", icon: "☼" },
-];
 ---
 
 <div class="series-grid">
-  {categories.map(({ day, label, icon }) => {
-    const video = videos.find((item) => item.data.day === day);
-
-    return video ? (
+  {videos.length > 0 ? (
+    videos.map((video) => (
       <VideoCard video={video} />
-    ) : (
-      <div class="coming-soon-card">
-        <div class="card-top">
-          <span>EPISODE {String(day).padStart(2, "0")} / 07</span>
-          <span>♡</span>
-        </div>
-
-        <div class="placeholder-art">
-          <span class="placeholder-icon">{icon}</span>
-          <span>something good is coming</span>
-        </div>
-
-        <div class="card-content">
-          <span class="category">{label}</span>
-          <h3>Coming soon ♡</h3>
-          <p>A new episode is on its way. Stay tuned!</p>
-          <span class="soon-label">not yet published ✧</span>
-        </div>
+    ))
+  ) : (
+    <div class="coming-soon-card">
+      <div class="card-top">
+        <span>FIRST EPISODE COMING SOON</span>
+        <span>♡</span>
       </div>
-    );
-  })}
+
+      <div class="placeholder-art">
+        <span class="placeholder-icon">✧</span>
+        <span>something good is coming</span>
+      </div>
+
+      <div class="card-content">
+        <span class="category">NEW EPISODES WEEKLY</span>
+        <h3>Coming soon ♡</h3>
+        <p>
+          The first episode is on its way.
+          Stay tuned for something good!
+        </p>
+        <span class="soon-label">not yet published ✧</span>
+      </div>
+    </div>
+  )}
 </div>
 
 <style>
@@ -79,7 +70,6 @@ const categories = [
 
   .card-top span:last-child {
     font-size: 24px;
-    line-height: 1;
   }
 
   .placeholder-art {

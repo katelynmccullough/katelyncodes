@@ -1,126 +1,174 @@
 
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import SeriesGrid from "../../components/SeriesGrid.astro";
 import { getCollection } from "astro:content";
 
 const series = (await getCollection("series")).sort(
-  (a, b) => b.data.week - a.data.week
+  (a, b) => a.data.order - b.data.order
 );
 
-const videos = await getCollection("videos");
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+
+const icons = ["♡", "⌘", "✳", "✧", "✦", "⚖", "☼"];
 ---
 
 <BaseLayout title="The Series | Katelyn Codes">
-  <main class="page-container series-page">
+  <div class="series-page">
     <div class="series-hero">
       <p class="eyebrow">THE KATELYN CODES EDIT ♡</p>
-      <h1>seven days. seven sides of tech.</h1>
-      <p class="series-intro">
-        A new collection every week. Research, coding projects,
-        AI experiments, tech ethics, and everything in between.
+      <h1>seven series.<br /><em>endless curiosity.</em></h1>
+      <p class="intro">
+        A little something different every day.
+        Coding projects, data science, research, AI,
+        tech ethics, and everything in between.
+        Pick your obsession ♡
       </p>
     </div>
 
-    {series.map((week) => (
-      <section class="weekly-section">
-        <div class="week-heading">
-          <div>
-            <span class="week-label">
-              WEEK {String(week.data.week).padStart(2, "0")}
+    <div class="series-directory">
+      {series.map((item) => (
+        <a
+          class="series-card"
+          href={`${base}series/${item.id}/`}
+        >
+          <div class="card-top">
+            <span>
+              {item.data.day.toUpperCase()} / SERIES {String(item.data.order).padStart(2, "0")}
             </span>
-            <h2>{week.data.title}</h2>
-            <p>{week.data.description}</p>
+            <span class="card-icon">{icons[item.data.order - 1]}</span>
           </div>
 
-          {week.data.theme && (
-            <span class="theme-pill">✧ {week.data.theme}</span>
-          )}
-        </div>
+          <div class="card-middle">
+            <h2>{item.data.title}</h2>
+            <p>{item.data.description}</p>
+          </div>
 
-        <SeriesGrid
-          videos={videos.filter(
-            (video) => video.data.series === week.id
-          )}
-        />
-      </section>
-    ))}
-  </main>
+          <div class="card-bottom">
+            <span>explore the series</span>
+            <span aria-hidden="true">↗</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
 </BaseLayout>
 
 <style>
   .series-page {
-    padding-top: 75px;
-    padding-bottom: 100px;
+    padding: 75px 0 100px;
   }
 
   .series-hero {
     max-width: 760px;
-    margin-bottom: 70px;
+    margin-bottom: 55px;
   }
 
   .series-hero h1 {
     font-family: "Playfair Display", Georgia, serif;
-    font-size: clamp(42px, 6vw, 74px);
-    line-height: 1.1;
-    margin: 16px 0 22px;
+    font-size: clamp(44px, 6vw, 76px);
+    line-height: 1.12;
+    margin: 16px 0 24px;
   }
 
-  .series-intro {
+  .series-hero h1 em {
+    color: #a91939;
+    font-weight: 400;
+  }
+
+  .series-hero .intro {
     color: #68565c;
     font-size: 18px;
     line-height: 1.8;
   }
 
-  .weekly-section {
-    margin-bottom: 90px;
+  .series-directory {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
   }
 
-  .week-heading {
+  .series-card {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: flex-start;
-    gap: 24px;
-    padding-bottom: 25px;
-    border-bottom: 1px solid #e4b9c2;
+    min-height: 270px;
+    padding: 28px;
+    background: #fff9f8;
+    border: 1px solid #e4b9c2;
+    border-radius: 22px;
+    color: #21191d;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease,
+      background 0.2s ease;
   }
 
-  .week-label {
+  .series-card:hover {
+    transform: translateY(-5px);
+    background: #fceef0;
+    box-shadow: 0 12px 28px rgba(169, 25, 57, 0.09);
+  }
+
+  .card-top,
+  .card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .card-top {
     color: #a91939;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.12em;
   }
 
-  .week-heading h2 {
-    font-family: "Playfair Display", Georgia, serif;
-    font-size: clamp(28px, 4vw, 42px);
-    margin: 12px 0;
+  .card-icon {
+    font-size: 30px;
+    line-height: 1;
   }
 
-  .week-heading p {
+  .card-middle {
+    margin: 30px 0;
+  }
+
+  .card-middle h2 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(25px, 3vw, 36px);
+    line-height: 1.2;
+    margin: 0 0 14px;
+  }
+
+  .card-middle p {
     color: #68565c;
     line-height: 1.7;
+    font-size: 14px;
     margin: 0;
   }
 
-  .theme-pill {
-    flex-shrink: 0;
-    background: #f6e5e8;
+  .card-bottom {
+    padding-top: 18px;
+    border-top: 1px solid #e4b9c2;
     color: #a91939;
-    padding: 12px 18px;
-    border-radius: 100px;
     font-size: 13px;
     font-weight: 700;
   }
 
-  @media (max-width: 600px) {
-    .week-heading {
-      flex-direction: column;
+  .card-bottom span:last-child {
+    font-size: 22px;
+  }
+
+  @media (max-width: 650px) {
+    .series-directory {
+      grid-template-columns: 1fr;
     }
 
     .series-page {
       padding-top: 45px;
+    }
+
+    .series-card {
+      min-height: 230px;
     }
   }
 </style>

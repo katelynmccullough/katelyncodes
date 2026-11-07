@@ -7,27 +7,14 @@ interface Props {
 }
 
 const { video } = Astro.props;
-
-const categoryNames: Record<string, string> = {
-  research: "Research Paper of the Week",
-  project: "Fun Coding Project",
-  "tech-girlie": "Becoming a Tech Girlie",
-  "data-science": "Data Science Deep Dive",
-  ai: "AI Experiments",
-  ethics: "Tech Ethics",
-  news: "AI & Tech News",
-};
-
-const category = categoryNames[video.data.category];
-const episode = String(video.data.day).padStart(2, "0");
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+const episode = String(video.data.episode).padStart(2, "0");
+const url = `${base}series/${video.data.series}/${video.id}/`;
 ---
 
-<a
-  class="video-card"
-  href={`${import.meta.env.BASE_URL.replace(/\/?$/, "/")}videos/${video.id}/`}
->
+<a class="video-card" href={url}>
   <div class="video-card-top">
-    <span>EPISODE {episode} / 07</span>
+    <span>EPISODE {episode}</span>
     <span class="heart">♡</span>
   </div>
 
@@ -37,10 +24,16 @@ const episode = String(video.data.day).padStart(2, "0");
   </div>
 
   <div class="video-card-content">
-    <span class="video-category">{category}</span>
+    <span class="video-category">
+      {video.data.publishDate.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+        timeZone: "UTC"
+      })}
+    </span>
 
     <h3>{video.data.title}</h3>
-
     <p>{video.data.description}</p>
 
     <span class="video-card-link">
@@ -48,6 +41,7 @@ const episode = String(video.data.day).padStart(2, "0");
     </span>
   </div>
 </a>
+
 
 <style>
   .video-card {

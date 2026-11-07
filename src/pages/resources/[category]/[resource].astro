@@ -1,0 +1,573 @@
+
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import {
+  getCollection,
+  render,
+  type CollectionEntry,
+} from "astro:content";
+
+// ♡ CREATE A PAGE FOR EACH RESOURCE IN EACH COLLECTION
+
+export async function getStaticPaths() {
+  const resources = await getCollection("resources");
+
+  return resources.flatMap((item) =>
+    item.data.categories.map((category) => ({
+      params: {
+        category: category,
+        resource: item.id,
+      },
+      props: {
+        resource: item,
+        category: category,
+      },
+    }))
+  );
+}
+
+interface Props {
+  resource: CollectionEntry<"resources">;
+  category: string;
+}
+
+const { resource, category } = Astro.props;
+const { Content } = await render(resource);
+
+const categoryInfo: Record<
+  string,
+  {
+    title: string;
+    eyebrow: string;
+    section: string;
+    icon: string;
+  }
+> = {
+  "learn-to-code": {
+    title: "Learn to Code",
+    eyebrow: "THE LEARNING EDIT ♡",
+    section: "my guide ♡",
+    icon: "♡",
+  },
+  "favorite-creators": {
+    title: "Favorite Creators",
+    eyebrow: "PEOPLE WORTH FOLLOWING ♡",
+    section: "why they're worth following ♡",
+    icon: "✳",
+  },
+  "tech-stack": {
+    title: "My Tech Stack",
+    eyebrow: "THE SETUP EDIT ♡",
+    section: "how I use it ♡",
+    icon: "✦",
+  },
+  research: {
+    title: "Research Shelf",
+    eyebrow: "THE RESEARCH EDIT ♡",
+    section: "let's break it down ♡",
+    icon: "✧",
+  },
+  "worth-reading": {
+    title: "Worth Reading",
+    eyebrow: "THE READING LIST ♡",
+    section: "my notes ♡",
+    icon: "☼",
+  },
+  "github-guides": {
+    title: "GitHub Guides",
+    eyebrow: "THE GITHUB EDIT ♡",
+    section: "the walkthrough ♡",
+    icon: "⌥",
+  },
+};
+
+const info = categoryInfo[category] ?? {
+  title: "Resources",
+  eyebrow: "THE RESOURCE EDIT ♡",
+  section: "my notes ♡",
+  icon: "♡",
+};
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+
+const kindLabels: Record<string, string> = {
+  "learning-platform": "Learning Platform",
+  community: "Community",
+  hackathon: "Hackathons & Events",
+  tutorial: "Tutorial",
+  other: "Resource",
+};
+
+const kind = resource.data.kind ?? "other";
+const kindLabel = kindLabels[kind] ?? "Resource";
+
+const externalLinkLabel =
+  kind === "learning-platform" || kind === "tutorial"
+    ? "start learning ↗"
+    : kind === "community"
+      ? "join the community ↗"
+      : kind === "hackathon"
+        ? "find an event ↗"
+        : "visit original resource ↗";
+---
+
+<BaseLayout title={`${resource.data.title} | Katelyn Codes`}>
+  <article class="detail-page">
+
+    <!-- ♡ BACK TO COLLECTION -->
+
+    <a
+      class="back-link"
+      href={`${base}resources/${category}/`}
+    >
+      ← back to {info.title}
+    </a>
+
+    <!-- ♡ RESOURCE HEADER -->
+
+    <header class="detail-hero">
+      <p class="eyebrow">{info.eyebrow}</p>
+
+      <div class="resource-type">
+        <span class="type-icon">{info.icon}</span>
+        <span>{kindLabel}</span>
+      </div>
+
+      <h1>{resource.data.title}</h1>
+
+      <p class="intro">{resource.data.description}</p>
+
+      <div class="meta-row">
+        {resource.data.featured && (
+          <span class="featured">✧ KATELYN'S PICK</span>
+        )}
+
+        {resource.data.author && (
+          <span>by {resource.data.author}</span>
+        )}
+
+        {resource.data.difficulty && (
+          <span>{resource.data.difficulty}</span>
+        )}
+
+        {resource.data.platform && (
+          <span>{resource.data.platform}</span>
+        )}
+      </div>
+
+      {resource.data.tags.length > 0 && (
+        <div class="tags">
+          {resource.data.tags.map((tag) => (
+            <span>{tag}</span>
+          ))}
+        </div>
+      )}
+
+      <div class="hero-actions">
+        <a
+          class="primary-action"
+          href={resource.data.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {externalLinkLabel}
+        </a>
+
+        <a
+          class="secondary-action"
+          href={`${base}resources/${category}/`}
+        >
+          more resources ♡
+        </a>
+      </div>
+    </header>
+
+    <!-- ♡ RESOURCE IMAGE -->
+
+    {resource.data.image && (
+      <div class="image-panel">
+        <img
+          src={resource.data.image}
+          alt={`${resource.data.title} preview`}
+          loading="lazy"
+        />
+      </div>
+    )}
+
+    <!-- ♡ CUSTOM RESOURCE CONTENT -->
+
+    <section class="content-section">
+      <div class="section-heading">
+        <span class="section-icon">{info.icon}</span>
+        <h2>{info.section}</h2>
+      </div>
+
+      <div class="markdown-content">
+        <Content />
+      </div>
+    </section>
+
+    <!-- ♡ BOTTOM RESOURCE LINK -->
+
+    <div class="resource-footer">
+      <div>
+        <span class="footer-eyebrow">READY TO EXPLORE?</span>
+        <h2>go check it out ♡</h2>
+        <p>
+          Found something interesting? Visit the original resource
+          and see what you think.
+        </p>
+      </div>
+
+      <a
+        href={resource.data.url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {externalLinkLabel}
+      </a>
+    </div>
+
+    <!-- ♡ BOTTOM NAVIGATION -->
+
+    <nav class="bottom-nav" aria-label="Resource navigation">
+      <a href={`${base}resources/${category}/`}>
+        ← back to {info.title}
+      </a>
+
+      <a href={`${base}resources/`}>
+        all collections ↗
+      </a>
+    </nav>
+
+  </article>
+</BaseLayout>
+
+<style>
+  /* ♡ PAGE */
+
+  .detail-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 0 110px;
+  }
+
+  .back-link {
+    color: #a91939;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  /* ♡ HERO */
+
+  .detail-hero {
+    margin: 55px 0 45px;
+  }
+
+  .resource-type {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 22px;
+    color: #a91939;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .type-icon {
+    font-size: 24px;
+  }
+
+  .detail-hero h1 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(44px, 6vw, 76px);
+    line-height: 1.12;
+    margin: 16px 0 24px;
+  }
+
+  .intro {
+    max-width: 760px;
+    color: #68565c;
+    font-size: 19px;
+    line-height: 1.8;
+  }
+
+  /* ♡ METADATA */
+
+  .meta-row,
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-top: 20px;
+  }
+
+  .meta-row span,
+  .tags span {
+    background: #f6e5e8;
+    color: #a91939;
+    padding: 8px 13px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .meta-row .featured {
+    background: #a91939;
+    color: #fff;
+  }
+
+  /* ♡ BUTTONS */
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 30px;
+  }
+
+  .primary-action,
+  .secondary-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 22px;
+    border-radius: 100px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    transition: transform .2s ease;
+  }
+
+  .primary-action {
+    background: #a91939;
+    color: #fff;
+  }
+
+  .secondary-action {
+    background: #fff9f8;
+    color: #a91939;
+    border: 1px solid #e4b9c2;
+  }
+
+  .primary-action:hover,
+  .secondary-action:hover {
+    transform: translateY(-2px);
+  }
+
+  /* ♡ IMAGE */
+
+  .image-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
+    padding: 35px;
+    background: #f6e5e8;
+    border-radius: 22px;
+    margin: 35px 0 45px;
+  }
+
+  .image-panel img {
+    display: block;
+    max-width: 100%;
+    max-height: 250px;
+    object-fit: contain;
+  }
+
+  /* ♡ CONTENT */
+
+  .content-section {
+    background: #fff9f8;
+    border: 1px solid #f0d7dc;
+    border-radius: 22px;
+    padding: 40px;
+    margin: 40px 0;
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e4b9c2;
+    margin-bottom: 30px;
+  }
+
+  .section-icon {
+    color: #a91939;
+    font-size: 26px;
+  }
+
+  .section-heading h2 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 32px;
+    margin: 0;
+  }
+
+  .markdown-content {
+    color: #342b30;
+    font-size: 16px;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+  }
+
+  .markdown-content :global(h2) {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 27px;
+    margin: 32px 0 12px;
+  }
+
+  .markdown-content :global(h3) {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 22px;
+    margin: 24px 0 10px;
+  }
+
+  .markdown-content :global(p) {
+    margin: 0 0 18px;
+  }
+
+  .markdown-content :global(ul),
+  .markdown-content :global(ol) {
+    padding-left: 24px;
+    margin-bottom: 20px;
+  }
+
+  .markdown-content :global(li) {
+    margin-bottom: 8px;
+  }
+
+  .markdown-content :global(a) {
+    color: #a91939;
+    font-weight: 600;
+  }
+
+  .markdown-content :global(pre) {
+    overflow-x: auto;
+    padding: 20px;
+    background: #f6e5e8;
+    border-radius: 12px;
+  }
+
+  .markdown-content :global(code) {
+    overflow-wrap: anywhere;
+  }
+
+  .markdown-content :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 14px;
+  }
+
+  .markdown-content :global(blockquote) {
+    border-left: 3px solid #a91939;
+    padding-left: 20px;
+    margin: 25px 0;
+    color: #68565c;
+  }
+
+  /* ♡ FOOTER CALLOUT */
+
+  .resource-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+    background: #f6e5e8;
+    border-radius: 22px;
+    padding: 35px;
+    margin: 45px 0;
+  }
+
+  .footer-eyebrow {
+    color: #a91939;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+  }
+
+  .resource-footer h2 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 30px;
+    margin: 10px 0;
+  }
+
+  .resource-footer p {
+    max-width: 430px;
+    color: #68565c;
+    font-size: 14px;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .resource-footer > a {
+    background: #a91939;
+    color: #fff;
+    border-radius: 100px;
+    padding: 13px 22px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  /* ♡ BOTTOM NAV */
+
+  .bottom-nav {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    border-top: 1px solid #e4b9c2;
+    padding-top: 25px;
+    margin-top: 55px;
+  }
+
+  .bottom-nav a {
+    color: #a91939;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .bottom-nav a:hover {
+    text-decoration: underline;
+  }
+
+  /* ♡ MOBILE */
+
+  @media (max-width: 600px) {
+    .detail-page {
+      padding-top: 40px;
+    }
+
+    .detail-hero {
+      margin-top: 40px;
+    }
+
+    .content-section {
+      padding: 24px;
+    }
+
+    .section-heading h2 {
+      font-size: 27px;
+    }
+
+    .image-panel {
+      min-height: 170px;
+      padding: 25px;
+    }
+
+    .resource-footer {
+      padding: 25px;
+    }
+  }
+</style>

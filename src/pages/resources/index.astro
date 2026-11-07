@@ -1,15 +1,225 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const resources = await getCollection("resources");
+const projects = await getCollection("projects");
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+
+const collections = [
+  {
+    id: "projects",
+    title: "My Projects",
+    description: "Things I've built, experiments, and GitHub projects.",
+    icon: "⌘",
+    count: projects.length,
+  },
+  {
+    id: "learn-to-code",
+    title: "Learn to Code",
+    description: "Tutorials, courses, and beginner-friendly coding resources.",
+    icon: "♡",
+  },
+  {
+    id: "favorite-creators",
+    title: "Favorite Creators",
+    description: "The people making the internet a little more interesting.",
+    icon: "✳",
+  },
+  {
+    id: "tech-stack",
+    title: "My Tech Stack",
+    description: "My favorite tools, apps, software, and setup essentials.",
+    icon: "✦",
+  },
+  {
+    id: "research",
+    title: "Research Shelf",
+    description: "Papers, studies, datasets, and discoveries worth exploring.",
+    icon: "✧",
+  },
+  {
+    id: "worth-reading",
+    title: "Worth Reading",
+    description: "Articles, Substacks, newsletters, and interesting reads.",
+    icon: "☼",
+  },
+  {
+    id: "github-guides",
+    title: "GitHub Guides",
+    description: "Git, GitHub, version control, and open-source resources.",
+    icon: "⌥",
+  },
+];
+
+const directory = collections.map((item) => ({
+  ...item,
+  count:
+    item.id === "projects"
+      ? projects.length
+      : resources.filter((resource) =>
+          resource.data.categories.includes(item.id as
+            typeof resources[number]["data"]["categories"][number])
+        ).length,
+}));
 ---
 
-<BaseLayout title="Resources">
-  <p class="eyebrow">THE GOOD STUFF</p>
-  <h1>the resource library ♡</h1>
-  <p class="intro">
-    tutorials, creators, coding resources,
-    research papers, and all my favorite finds.
-  </p>
-  <div class="placeholder">
-    your new favorite internet rabbit hole ♡
+<BaseLayout title="Resources | Katelyn Codes">
+  <div class="resources-page">
+    <div class="resources-hero">
+      <p class="eyebrow">THE KATELYN CODES LIBRARY ♡</p>
+      <h1>the good stuff.<br /><em>all in one place.</em></h1>
+      <p class="intro">
+        Everything I've bookmarked, learned from, built with,
+        or couldn't stop thinking about. Pick a collection ♡
+      </p>
+    </div>
+
+    <div class="resource-directory">
+      {directory.map((item, index) => (
+        <a
+          class="collection-card"
+          href={`${base}resources/${item.id}/`}
+        >
+          <div class="card-top">
+            <span>
+              COLLECTION {String(index + 1).padStart(2, "0")}
+            </span>
+            <span class="card-icon">{item.icon}</span>
+          </div>
+
+          <div class="card-middle">
+            <h2>{item.title}</h2>
+            <p>{item.description}</p>
+          </div>
+
+          <div class="card-bottom">
+            <span>
+              {item.count} {item.count === 1 ? "item" : "items"}
+            </span>
+            <span>explore ↗</span>
+          </div>
+        </a>
+      ))}
+    </div>
   </div>
 </BaseLayout>
+
+<style>
+  .resources-page {
+    padding: 75px 0 110px;
+  }
+
+  .resources-hero {
+    max-width: 760px;
+    margin-bottom: 55px;
+  }
+
+  .resources-hero h1 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(44px, 6vw, 76px);
+    line-height: 1.12;
+    margin: 16px 0 24px;
+  }
+
+  .resources-hero h1 em {
+    color: #a91939;
+    font-weight: 400;
+  }
+
+  .resources-hero .intro {
+    color: #68565c;
+    font-size: 18px;
+    line-height: 1.8;
+  }
+
+  .resource-directory {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .collection-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 270px;
+    padding: 28px;
+    background: #fff9f8;
+    border: 1px solid #e4b9c2;
+    border-radius: 22px;
+    color: #21191d;
+    text-decoration: none;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .collection-card:hover {
+    transform: translateY(-5px);
+    background: #fceef0;
+    box-shadow: 0 12px 28px rgba(169, 25, 57, 0.09);
+  }
+
+  .card-top,
+  .card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .card-top {
+    color: #a91939;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+
+  .card-icon {
+    font-size: 30px;
+    line-height: 1;
+  }
+
+  .card-middle {
+    margin: 30px 0;
+  }
+
+  .card-middle h2 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(25px, 3vw, 36px);
+    line-height: 1.2;
+    margin: 0 0 14px;
+  }
+
+  .card-middle p {
+    color: #68565c;
+    line-height: 1.7;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .card-bottom {
+    padding-top: 18px;
+    border-top: 1px solid #e4b9c2;
+    color: #a91939;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  @media (max-width: 650px) {
+    .resource-directory {
+      grid-template-columns: 1fr;
+    }
+
+    .resources-page {
+      padding-top: 45px;
+    }
+
+    .collection-card {
+      min-height: 230px;
+    }
+  }
+</style>

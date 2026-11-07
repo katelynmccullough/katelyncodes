@@ -1,0 +1,142 @@
+
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SeriesGrid from "../../components/SeriesGrid.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+
+export async function getStaticPaths() {
+  const series = await getCollection("series");
+
+  return series.map((item) => ({
+    params: { slug: item.id },
+    props: { seriesItem: item },
+  }));
+}
+
+interface Props {
+  seriesItem: CollectionEntry<"series">;
+}
+
+const { seriesItem } = Astro.props;
+
+const videos = (await getCollection("videos"))
+  .filter(
+    (video) =>
+      video.data.series === seriesItem.id &&
+      !video.data.draft
+  )
+  .sort(
+    (a, b) =>
+      b.data.publishDate.getTime() -
+      a.data.publishDate.getTime()
+  );
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+---
+
+<BaseLayout title={`${seriesItem.data.title} | Katelyn Codes`}>
+  <div class="archive-page">
+    <a class="back-link" href={`${base}series/`}>
+      ← all series
+    </a>
+
+    <div class="archive-hero">
+      <p class="eyebrow">
+        {seriesItem.data.day.toUpperCase()} / THE KATELYN CODES EDIT ♡
+      </p>
+
+      <h1>{seriesItem.data.title}</h1>
+      <p class="intro">{seriesItem.data.description}</p>
+
+      {seriesItem.data.tagline && (
+        <span class="tagline">✧ {seriesItem.data.tagline}</span>
+      )}
+    </div>
+
+    <div class="episodes-heading">
+      <h2>the episodes ♡</h2>
+      <span>
+        {videos.length} {videos.length === 1 ? "episode" : "episodes"}
+      </span>
+    </div>
+
+    <SeriesGrid videos={videos} />
+  </div>
+</BaseLayout>
+
+<style>
+  .archive-page {
+    padding: 60px 0 100px;
+  }
+
+  .back-link {
+    color: #a91939;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  .archive-hero {
+    max-width: 760px;
+    margin: 55px 0 70px;
+  }
+
+  .archive-hero h1 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(44px, 6vw, 76px);
+    line-height: 1.12;
+    margin: 16px 0 24px;
+  }
+
+  .archive-hero .intro {
+    color: #68565c;
+    font-size: 18px;
+    line-height: 1.8;
+  }
+
+  .tagline {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 10px 16px;
+    background: #f6e5e8;
+    color: #a91939;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .episodes-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    border-bottom: 1px solid #e4b9c2;
+    padding-bottom: 18px;
+  }
+
+  .episodes-heading h2 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 32px;
+    margin: 0;
+  }
+
+  .episodes-heading span {
+    color: #a91939;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  @media (max-width: 600px) {
+    .archive-page {
+      padding-top: 40px;
+    }
+
+    .archive-hero {
+      margin: 40px 0 55px;
+    }
+  }
+</style>

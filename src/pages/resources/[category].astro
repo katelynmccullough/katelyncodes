@@ -1,0 +1,587 @@
+
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+
+export function getStaticPaths() {
+  const categories = [
+    { id: "projects", title: "My Projects", description: "Things I've built, experiments, and GitHub projects.", icon: "⌘" },
+    { id: "learn-to-code", title: "Learn to Code", description: "Tutorials, courses, communities, and beginner-friendly coding resources.", icon: "♡" },
+    { id: "favorite-creators", title: "Favorite Creators", description: "The people making the internet a little more interesting.", icon: "✳" },
+    { id: "tech-stack", title: "My Tech Stack", description: "My favorite tools, apps, software, and setup essentials.", icon: "✦" },
+    { id: "research", title: "Research Shelf", description: "Papers, studies, datasets, and discoveries worth exploring.", icon: "✧" },
+    { id: "worth-reading", title: "Worth Reading", description: "Articles, Substacks, newsletters, and interesting reads.", icon: "☼" },
+    { id: "github-guides", title: "GitHub Guides", description: "Git, GitHub, version control, and open-source resources.", icon: "⌥" },
+  ];
+
+  return categories.map((category) => ({
+    params: { category: category.id },
+    props: { category },
+  }));
+}
+
+interface Props {
+  category: {
+    id: string;
+    title: string;
+    description: string;
+    icon: string;
+  };
+}
+
+const { category } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+
+const resources = await getCollection("resources");
+const projects = await getCollection("projects");
+
+type ResourceCategory =
+  CollectionEntry<"resources">["data"]["categories"][number];
+
+const isProjects = category.id === "projects";
+const isLearnToCode = category.id === "learn-to-code";
+
+const filteredResources = resources
+  .filter((resource) =>
+    !isProjects &&
+    resource.data.categories.includes(category.id as ResourceCategory)
+  )
+  .sort((a, b) => Number(b.data.featured) - Number(a.data.featured));
+
+const sortedProjects = [...projects].sort(
+  (a, b) => Number(b.data.featured) - Number(a.data.featured)
+);
+
+const itemCount = isProjects ? sortedProjects.length : filteredResources.length;
+
+const kindLabels: Record<string, string> = {
+  "learning-platform": "Learning Platform",
+  community: "Community",
+  hackathon: "Hackathons & Events",
+  tutorial: "Tutorial",
+  other: "Resource",
+};
+---
+
+<BaseLayout title={`${category.title} | Katelyn Codes`}>
+  <div class="category-page">
+
+    <a class="back-link" href={`${base}resources/`}>
+      ← all collections
+    </a>
+
+    <header class="category-hero">
+      <p class="eyebrow">THE KATELYN CODES LIBRARY ♡</p>
+
+      <div class="category-label">
+        <span>{category.icon}</span>
+        <span>THE RESOURCE EDIT</span>
+      </div>
+
+      <h1>{category.title}</h1>
+      <p class="intro">{category.description}</p>
+    </header>
+
+    <div class="items-heading">
+      <h2>the collection ♡</h2>
+      <span>{itemCount} {itemCount === 1 ? "item" : "items"}</span>
+    </div>
+
+    <!-- ♡ FILTERS: LEARN TO CODE ONLY -->
+
+    {isLearnToCode && (
+      <div class="filter-bar" aria-label="Filter resources">
+        <button class="filter-btn active" type="button" data-filter="all">
+          All resources
+        </button>
+        <button class="filter-btn" type="button" data-filter="learning-platform">
+          Learn coding
+        </button>
+        <button class="filter-btn" type="button" data-filter="community">
+          Communities
+        </button>
+        <button class="filter-btn" type="button" data-filter="hackathon">
+          Hackathons & events
+        </button>
+      </div>
+    )}
+
+    <!-- ♡ PROJECT CARDS -->
+
+    {isProjects && (
+      <div class="items-grid">
+        {sortedProjects.map((project) => (
+          <article class="item-card">
+            <a
+              class="card-main-link"
+              href={`${base}resources/projects/${project.id}/`}
+              aria-label={`Read about ${project.data.title}`}
+            >
+              <div class="card-art">
+                {project.data.image ? (
+                  <img
+                    src={project.data.image}
+                    alt={`${project.data.title} preview`}
+                    loading="lazy"
+                  />
+                ) : (
+                  <span class="art-icon">⌘</span>
+                )}
+              </div>
+
+              <div class="card-content">
+                <span class="card-eyebrow">
+                  {project.data.featured ? "✧ FEATURED PROJECT" : "MADE BY KATELYN ♡"}
+                </span>
+                <h3>{project.data.title}</h3>
+                <p>{project.data.description}</p>
+              </div>
+            </a>
+
+            <div class="tags">
+              {project.data.techStack.map((tag) => (
+                <span class="tag">{tag}</span>
+              ))}
+            </div>
+
+            <div class="card-links">
+              <a href={`${base}resources/projects/${project.id}/`}>
+                view project ↗
+              </a>
+              <a
+                href={project.data.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                GitHub ↗
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    )}
+
+    <!-- ♡ RESOURCE CARDS -->
+
+    {!isProjects && (
+      <div class="items-grid" id="resource-grid">
+        {filteredResources.map((resource) => (
+          <article
+            class="item-card resource-card"
+            data-kind={resource.data.kind ?? "other"}
+          >
+            <a
+              class="card-main-link"
+              href={`${base}resources/${category.id}/${resource.id}/`}
+              aria-label={`Read about ${resource.data.title}`}
+            >
+              <div class="card-art">
+                {resource.data.image ? (
+                  <img
+                    src={resource.data.image}
+                    alt={`${resource.data.title} logo or preview`}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="resource-placeholder">
+                    <span>{category.icon}</span>
+                    <small>CURATED WITH LOVE ♡</small>
+                  </div>
+                )}
+              </div>
+
+              <div class="card-content">
+                <span class="card-eyebrow">
+                  {resource.data.featured ? "✧ KATELYN'S PICK" : "RESOURCE ♡"}
+                </span>
+
+                <span class="kind-label">
+                  {kindLabels[resource.data.kind ?? "other"]}
+                </span>
+
+                <h3>{resource.data.title}</h3>
+                <p>{resource.data.description}</p>
+              </div>
+            </a>
+
+            <div class="tags">
+              {resource.data.tags.map((tag) => (
+                <span class="tag">{tag}</span>
+              ))}
+            </div>
+
+            <div class="card-links">
+              <a href={`${base}resources/${category.id}/${resource.id}/`}>
+                read my guide ↗
+              </a>
+              <a
+                href={resource.data.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                official site ↗
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    )}
+
+    {itemCount === 0 && (
+      <div class="empty-collection">
+        <span>♡</span>
+        <h3>something good is coming.</h3>
+        <p>I'm still collecting my favorites for this shelf. Check back soon ♡</p>
+      </div>
+    )}
+
+    <div class="bottom-nav">
+      <a href={`${base}resources/`}>
+        ← explore more collections
+      </a>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .category-page {
+    padding: 60px 0 110px;
+  }
+
+  .back-link,
+  .bottom-nav a {
+    color: #a91939;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .back-link:hover,
+  .bottom-nav a:hover {
+    text-decoration: underline;
+  }
+
+  .category-hero {
+    max-width: 760px;
+    margin: 55px 0 65px;
+  }
+
+  .category-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+    color: #a91939;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .12em;
+  }
+
+  .category-label span:first-child {
+    font-size: 24px;
+  }
+
+  .category-hero h1 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(44px, 6vw, 76px);
+    line-height: 1.12;
+    margin: 16px 0 24px;
+  }
+
+  .intro {
+    color: #68565c;
+    font-size: 18px;
+    line-height: 1.8;
+  }
+
+  .items-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid #e4b9c2;
+    padding-bottom: 20px;
+    margin-bottom: 25px;
+  }
+
+  .items-heading h2 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 32px;
+    margin: 0;
+  }
+
+  .items-heading span {
+    color: #a91939;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  /* ♡ FILTER BUTTONS */
+
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+  }
+
+  .filter-btn {
+    appearance: none;
+    border: 1px solid #e4b9c2;
+    background: #fff9f8;
+    color: #a91939;
+    border-radius: 100px;
+    padding: 10px 16px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease;
+  }
+
+  .filter-btn:hover,
+  .filter-btn.active {
+    background: #a91939;
+    color: #fff;
+    border-color: #a91939;
+  }
+
+  /* ♡ GRID */
+
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .item-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    background: #fff9f8;
+    border: 1px solid #e4b9c2;
+    border-radius: 22px;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+
+  .item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(169, 25, 57, .09);
+  }
+
+  .item-card[hidden] {
+    display: none !important;
+  }
+
+  .card-main-link {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .card-main-link:hover h3 {
+    color: #a91939;
+  }
+
+  .card-art {
+    height: 165px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background: #f6e5e8;
+    border-radius: 14px;
+  }
+
+  .card-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 18px;
+    box-sizing: border-box;
+  }
+
+  .art-icon {
+    color: #a91939;
+    font-size: 52px;
+  }
+
+  .resource-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: #a91939;
+  }
+
+  .resource-placeholder span {
+    font-size: 48px;
+  }
+
+  .resource-placeholder small {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+  }
+
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .card-eyebrow {
+    color: #a91939;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+  }
+
+  .kind-label {
+    align-self: flex-start;
+    background: #f6e5e8;
+    color: #a91939;
+    padding: 5px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .card-content h3 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 26px;
+    line-height: 1.25;
+    margin: 0;
+  }
+
+  .card-content p {
+    color: #68565c;
+    font-size: 14px;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .tag {
+    background: #f6e5e8;
+    color: #a91939;
+    border-radius: 100px;
+    padding: 6px 11px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .card-links {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid #e4b9c2;
+  }
+
+  .card-links a {
+    color: #a91939;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .card-links a:hover {
+    text-decoration: underline;
+  }
+
+  .empty-collection {
+    padding: 65px 24px;
+    text-align: center;
+    background: #fff9f8;
+    border: 1px dashed #e4b9c2;
+    border-radius: 22px;
+  }
+
+  .empty-collection > span {
+    color: #a91939;
+    font-size: 48px;
+  }
+
+  .empty-collection h3 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 28px;
+  }
+
+  .empty-collection p {
+    color: #68565c;
+  }
+
+  .bottom-nav {
+    margin-top: 60px;
+    padding-top: 25px;
+    border-top: 1px solid #e4b9c2;
+  }
+
+  @media (max-width: 900px) {
+    .items-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 600px) {
+    .category-page {
+      padding-top: 40px;
+    }
+
+    .category-hero {
+      margin: 40px 0 50px;
+    }
+
+    .items-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .items-heading h2 {
+      font-size: 27px;
+    }
+  }
+</style>
+
+<script>
+  function initializeFilters() {
+    const buttons = document.querySelectorAll<HTMLButtonElement>(
+      ".filter-btn"
+    );
+
+    const cards = document.querySelectorAll<HTMLElement>(
+      "#resource-grid .resource-card"
+    );
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const filter = button.dataset.filter ?? "all";
+
+        buttons.forEach((item) => {
+          const active = item === button;
+          item.classList.toggle("active", active);
+          item.setAttribute("aria-pressed", String(active));
+        });
+
+        cards.forEach((card) => {
+          const matches =
+            filter === "all" || card.dataset.kind === filter;
+
+          card.hidden = !matches;
+        });
+      });
+    });
+  }
+
+  document.addEventListener("astro:page-load", initializeFilters);
+  initializeFilters();
+</script>

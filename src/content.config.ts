@@ -3,8 +3,8 @@ import { defineCollection } from "astro:content";
 import { z } from "astro/zod";
 import { glob } from "astro/loaders";
 
-// ♡ WEEKLY SERIES COLLECTION
-// Each series contains 7 videos with an optional theme.
+// ♡ PERMANENT SERIES COLLECTION
+// Seven ongoing series, each with a dedicated day.
 
 const series = defineCollection({
   loader: glob({
@@ -15,14 +15,31 @@ const series = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    week: z.number().int().positive(),
-    startDate: z.coerce.date(),
-    theme: z.string().optional(),
+
+    // The day this series publishes new episodes
+    day: z.enum([
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+      "sunday",
+    ]),
+
+    // Used to order the series on the website
+    order: z.number().int().min(1).max(7),
+
+    // Optional short tagline
+    tagline: z.string().optional(),
+
+    // Optional cover image
+    coverImage: z.string().optional(),
   }),
 });
 
 // ♡ VIDEO COLLECTION
-// Each video belongs to a weekly series and one of 7 categories.
+// Each video belongs to one permanent series.
 
 const videos = defineCollection({
   loader: glob({
@@ -34,31 +51,26 @@ const videos = defineCollection({
     title: z.string(),
     description: z.string(),
 
-    // Which weekly series this video belongs to
+    // Must match a series Markdown filename
     series: z.string(),
 
-    // Episode position (1 through 7)
-    day: z.number().int().min(1).max(7),
-
-    // Recurring content category
-    category: z.enum([
-      "research",
-      "project",
-      "tech-girlie",
-      "data-science",
-      "ai",
-      "ethics",
-      "news",
-    ]),
+    // Episode number within that series
+    episode: z.number().int().positive(),
 
     // Publication date
     publishDate: z.coerce.date(),
 
-    // Optional external video and code links
+    // Drafts won't appear once we add filtering
+    draft: z.boolean().default(false),
+
+    // Optional TikTok and GitHub links
     tiktokUrl: z.url().optional(),
     githubUrl: z.url().optional(),
 
-    // Additional resources mentioned in the video
+    // Optional episode thumbnail
+    thumbnail: z.string().optional(),
+
+    // Links to tutorials, articles, papers, and tools
     links: z.array(
       z.object({
         label: z.string(),
@@ -68,9 +80,92 @@ const videos = defineCollection({
   }),
 });
 
-// ♡ REGISTER CONTENT COLLECTIONS
+
+// ♡ RESOURCE LIBRARY COLLECTION
+
+const resources = defineCollection({
+  loader: glob({
+    pattern: "**/*.md",
+    base: "./src/content/resources",
+  }),
+
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    url: z.url(),
+
+    categories: z.array(
+      z.enum([
+        "learn-to-code",
+        "favorite-creators",
+        "tech-stack",
+        "research",
+        "worth-reading",
+        "github-guides",
+      ])
+    ).min(1),
+
+    tags: z.array(z.string()).default([]),
+    featured: z.boolean().default(false),
+    type: z.enum([
+        "tutorial",
+        "creator",
+        "tool",
+        "research",
+        "article",
+        "github-guide",
+        ]).optional(),
+
+    image: z.string().optional(),
+    author: z.string().optional(),
+    difficulty: z.enum(["Beginner", "Intermediate", "Advanced"]).optional(),
+    platform: z.string().optional(),
+
+    kind: z.enum([
+        "learning-platform",
+        "community",
+        "hackathon",
+        "tutorial",
+        "other",
+    ]).default("other"),
+  }),
+});
+
+// ♡ PROJECT PORTFOLIO COLLECTION
+
+const projects = defineCollection({
+  loader: glob({
+    pattern: "**/*.md",
+    base: "./src/content/projects",
+  }),
+
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+
+    githubUrl: z.url(),
+    demoUrl: z.url().optional(),
+    image: z.string().optional(),
+
+    techStack: z.array(z.string()).default([]),
+    featured: z.boolean().default(false),
+    publishDate: z.coerce.date().optional(),
+    status: z.enum([
+        "Completed",
+        "In Progress",
+        "Archived",
+        ]).optional(),
+
+    role: z.string().optional(),
+  }),
+});
+
+
+// ♡ REGISTER COLLECTIONS
 
 export const collections = {
   series,
   videos,
+  resources,
+  projects,
 };
